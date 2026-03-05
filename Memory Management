@@ -1,0 +1,61 @@
+//  Memory Manager
+let cards = [];
+let selectedCards = [];
+let symbols = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D'];
+let gameState = "PLAY";
+
+function setup() {
+  createCanvas(400, 400);
+  symbols.sort(() => random() - 0.5); 
+  
+  // Inizializzazione griglia della grafica 4x2
+  for (let i = 0; i < 8; i++) {
+    cards.push({
+      x: (i % 4) * 100,
+      y: floor(i / 4) * 150,
+      val: symbols[i],
+      revealed: false,
+      matched: false
+    });
+  }
+}
+
+function draw() {
+  background(220);
+  cards.forEach(card => {
+    fill(card.revealed || card.matched ? 255 : 100);
+    rect(card.x + 10, card.y + 10, 80, 130, 10);
+    if (card.revealed || card.matched) {
+      fill(0);
+      textAlign(CENTER, CENTER);
+      textSize(32);
+      text(card.val, card.x + 50, card.y + 75);
+    }
+  });
+}
+
+function mousePressed() {
+  if (selectedCards.length < 2) {
+    for (let card of cards) {
+      if (mouseX > card.x && mouseX < card.x + 100 && mouseY > card.y && mouseY < card.y + 150 && !card.revealed) {
+        card.revealed = true;
+        selectedCards.push(card);
+        if (selectedCards.length === 2) checkMatch();
+      }
+    }
+  }
+}
+
+function checkMatch() {
+  if (selectedCards[0].val === selectedCards[1].val) {
+    selectedCards[0].matched = true;
+    selectedCards[1].matched = true;
+    selectedCards = [];
+  } else {
+    setTimeout(() => {
+      selectedCards[0].revealed = false;
+      selectedCards[1].revealed = false;
+      selectedCards = [];
+    }, 1000);
+  }
+}
